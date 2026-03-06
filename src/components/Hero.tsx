@@ -131,7 +131,7 @@ export default function Hero() {
                             Save The Date
                         </p>
                         <p className="text-2xl md:text-3xl text-gray-800 font-serif mt-2">
-                            April 9, 2026
+                            April 6, 2026
                         </p>
                     </div>
                 </div>

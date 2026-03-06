@@ -94,7 +94,7 @@ export default function EventDetails() {
                                     حفل الزفاف
                                 </p>
                                 <p className="text-3xl font-light text-rose-500 mb-4">
-                                    April 9, 2026
+                                    April 6, 2026 | 3:00 - 5:00 PM
                                 </p>
                                 <div className="space-y-1 mb-4">
                                     <p className="text-gray-800 font-medium text-lg" dir="rtl">
