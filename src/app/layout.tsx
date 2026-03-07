@@ -16,15 +16,23 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-    title: "Mustafa & Sara | Wedding Invitation",
+    metadataBase: new URL("https://mustafa-and-sara.vercel.app"),
+    title: "You're Invited! Mustafa & Sara's Wedding",
     description:
-        "Join us in celebrating the wedding of Mustafa Mahdy and Sara Mohsen. Save the date: April 6, 2026",
+        "Join us to celebrate our special day — April 6, 2026 | 6th of October City, Giza",
     keywords: ["wedding", "invitation", "Mustafa", "Sara", "Mahdy", "Mohsen"],
     openGraph: {
-        title: "Mustafa & Sara | Wedding Invitation",
+        title: "You're Invited! Mustafa & Sara's Wedding",
         description:
-            "Join us in celebrating the wedding of Mustafa Mahdy and Sara Mohsen",
+            "Join us to celebrate our special day — April 6, 2026 | 6th of October City, Giza",
         type: "website",
+        siteName: "Mustafa & Sara Wedding",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "You're Invited! Mustafa & Sara's Wedding",
+        description:
+            "Join us to celebrate our special day — April 6, 2026",
     },
 };
 
