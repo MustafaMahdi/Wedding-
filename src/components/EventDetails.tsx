@@ -115,6 +115,7 @@ export default function EventDetails() {
 
                 {/* Embedded Google Map */}
                 <div
+                    id="map-section"
                     className={`mt-10 transition-all duration-700 ${
                         isVisible
                             ? "opacity-100 translate-y-0"
