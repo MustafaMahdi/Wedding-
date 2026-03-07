@@ -107,12 +107,14 @@ export default function GuestWishes() {
             //     photoURL = await getDownloadURL(storageRef);
             // }
 
+            console.log("Submitting wish...", { name, message });
             await addDoc(collection(db, "wishes"), {
                 name,
                 message,
                 // ...(photoURL && { photoURL }),
                 createdAt: Timestamp.now(),
             });
+            console.log("Wish submitted successfully!");
 
             setName("");
             setMessage("");
