@@ -5,9 +5,9 @@ import { db /* , storage */ } from "@/lib/firebase";
 import {
     collection,
     addDoc,
-    onSnapshot,
-    orderBy,
-    query,
+    // onSnapshot,
+    // orderBy,
+    // query,
     Timestamp,
 } from "firebase/firestore";
 // TODO: Uncomment when Firebase Storage (Blaze plan) is enabled
@@ -23,7 +23,6 @@ interface Wish {
 
 export default function GuestWishes() {
     const [isVisible, setIsVisible] = useState(false);
-    const [wishes, setWishes] = useState<Wish[]>([]);
     const [name, setName] = useState("");
     const [message, setMessage] = useState("");
     // const [photo, setPhoto] = useState<File | null>(null);
@@ -51,25 +50,23 @@ export default function GuestWishes() {
         };
     }, []);
 
-    // Real-time listener for wishes
-    useEffect(() => {
-        const q = query(
-            collection(db, "wishes"),
-            orderBy("createdAt", "desc")
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const wishesData: Wish[] = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            })) as Wish[];
-            setWishes(wishesData);
-        }, (error) => {
-            console.error("Error fetching wishes:", error);
-        });
-
-        return () => unsubscribe();
-    }, []);
+    // TODO: Uncomment to show wishes publicly on the site
+    // useEffect(() => {
+    //     const q = query(
+    //         collection(db, "wishes"),
+    //         orderBy("createdAt", "desc")
+    //     );
+    //     const unsubscribe = onSnapshot(q, (snapshot) => {
+    //         const wishesData: Wish[] = snapshot.docs.map((doc) => ({
+    //             id: doc.id,
+    //             ...doc.data(),
+    //         })) as Wish[];
+    //         setWishes(wishesData);
+    //     }, (error) => {
+    //         console.error("Error fetching wishes:", error);
+    //     });
+    //     return () => unsubscribe();
+    // }, []);
 
     // TODO: Uncomment when Firebase Storage is enabled
     // const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -298,71 +295,23 @@ export default function GuestWishes() {
                     </form>
                 </div>
 
-                {/* Wishes Display Grid */}
-                <div
-                    className={`transition-all duration-1000 delay-500 ${
-                        isVisible
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-10"
-                    }`}
-                >
-                    {wishes.length === 0 ? (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
-                                <svg
-                                    className="w-8 h-8 text-rose-400"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                            </div>
-                            <p className="text-gray-500 text-lg">
-                                No wishes yet — be the first!
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {wishes.map((wish, index) => (
-                                <div
-                                    key={wish.id}
-                                    className="bg-white rounded-2xl p-6 shadow-lg border border-rose-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                                    style={{
-                                        animationDelay: `${index * 100}ms`,
-                                    }}
-                                >
-                                    {/* TODO: Uncomment when photo upload is enabled */}
-                                    {/* {wish.photoURL && (
-                                        <div className="mb-4 rounded-xl overflow-hidden">
-                                            <img
-                                                src={wish.photoURL}
-                                                alt={`Photo from ${wish.name}`}
-                                                className="w-full h-48 object-cover"
-                                            />
-                                        </div>
-                                    )} */}
-
-                                    {/* Name */}
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-amber-400 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-white text-sm font-medium">
-                                                {wish.name.charAt(0).toUpperCase()}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-bold text-gray-800">
-                                            {wish.name}
-                                        </h3>
+                {/* TODO: Uncomment to show wishes publicly on the site
+                <div className={`transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {wishes.map((wish, index) => (
+                            <div key={wish.id} className="bg-white rounded-2xl p-6 shadow-lg border border-rose-100">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-amber-400 flex items-center justify-center">
+                                        <span className="text-white text-sm font-medium">{wish.name.charAt(0).toUpperCase()}</span>
                                     </div>
-
-                                    {/* Message */}
-                                    <p className="text-gray-600 text-sm leading-relaxed">
-                                        {wish.message}
-                                    </p>
+                                    <h3 className="font-bold text-gray-800">{wish.name}</h3>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <p className="text-gray-600 text-sm leading-relaxed">{wish.message}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+                */}
             </div>
         </section>
     );
