@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, FormEvent } from "react";
-import { db, storage } from "@/lib/firebase";
+import { useState, useEffect, /* useRef, */ FormEvent } from "react";
+import { db /* , storage */ } from "@/lib/firebase";
 import {
     collection,
     addDoc,
@@ -10,13 +10,14 @@ import {
     query,
     Timestamp,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// TODO: Uncomment when Firebase Storage (Blaze plan) is enabled
+// import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface Wish {
     id: string;
     name: string;
     message: string;
-    photoURL?: string;
+    // photoURL?: string;
     createdAt: Timestamp;
 }
 
@@ -25,11 +26,11 @@ export default function GuestWishes() {
     const [wishes, setWishes] = useState<Wish[]>([]);
     const [name, setName] = useState("");
     const [message, setMessage] = useState("");
-    const [photo, setPhoto] = useState<File | null>(null);
-    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    // const [photo, setPhoto] = useState<File | null>(null);
+    // const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    // const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Intersection observer for fade-in animation
     useEffect(() => {
@@ -68,61 +69,58 @@ export default function GuestWishes() {
         return () => unsubscribe();
     }, []);
 
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setPhoto(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhotoPreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    // TODO: Uncomment when Firebase Storage is enabled
+    // const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
+    //     if (file) {
+    //         setPhoto(file);
+    //         const reader = new FileReader();
+    //         reader.onloadend = () => {
+    //             setPhotoPreview(reader.result as string);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
 
-    const removePhoto = () => {
-        setPhoto(null);
-        setPhotoPreview(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
-    };
+    // const removePhoto = () => {
+    //     setPhoto(null);
+    //     setPhotoPreview(null);
+    //     if (fileInputRef.current) {
+    //         fileInputRef.current.value = "";
+    //     }
+    // };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            let photoURL: string | undefined;
+            // TODO: Uncomment when Firebase Storage is enabled
+            // let photoURL: string | undefined;
+            // if (photo) {
+            //     const timestamp = Date.now();
+            //     const storagePath = `wishes/${timestamp}_${photo.name}`;
+            //     const storageRef = ref(storage, storagePath);
+            //     await uploadBytes(storageRef, photo);
+            //     photoURL = await getDownloadURL(storageRef);
+            // }
 
-            // Upload photo if provided
-            if (photo) {
-                const timestamp = Date.now();
-                const storagePath = `wishes/${timestamp}_${photo.name}`;
-                const storageRef = ref(storage, storagePath);
-                await uploadBytes(storageRef, photo);
-                photoURL = await getDownloadURL(storageRef);
-            }
-
-            // Save wish to Firestore
             await addDoc(collection(db, "wishes"), {
                 name,
                 message,
-                ...(photoURL && { photoURL }),
+                // ...(photoURL && { photoURL }),
                 createdAt: Timestamp.now(),
             });
 
-            // Clear form and show success
             setName("");
             setMessage("");
-            setPhoto(null);
-            setPhotoPreview(null);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
+            // setPhoto(null);
+            // setPhotoPreview(null);
+            // if (fileInputRef.current) {
+            //     fileInputRef.current.value = "";
+            // }
             setIsSubmitted(true);
 
-            // Hide success message after 5 seconds
             setTimeout(() => {
                 setIsSubmitted(false);
             }, 5000);
@@ -205,8 +203,8 @@ export default function GuestWishes() {
                                 />
                             </div>
 
-                            {/* Photo Upload */}
-                            <div>
+                            {/* TODO: Uncomment Photo Upload when Firebase Storage is enabled */}
+                            {/* <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">
                                     Add a Photo (optional)
                                 </label>
@@ -217,8 +215,6 @@ export default function GuestWishes() {
                                     onChange={handlePhotoChange}
                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-rose-50 file:text-rose-600 hover:file:bg-rose-100 transition-all cursor-pointer"
                                 />
-
-                                {/* Photo Preview */}
                                 {photoPreview && (
                                     <div className="mt-4 relative inline-block">
                                         <img
@@ -231,23 +227,11 @@ export default function GuestWishes() {
                                             onClick={removePhoto}
                                             className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-rose-600 transition-colors"
                                         >
-                                            <svg
-                                                className="w-3 h-3"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
+                                            X
                                         </button>
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* Submit Button */}
                             <button
@@ -343,8 +327,8 @@ export default function GuestWishes() {
                                         animationDelay: `${index * 100}ms`,
                                     }}
                                 >
-                                    {/* Photo if present */}
-                                    {wish.photoURL && (
+                                    {/* TODO: Uncomment when photo upload is enabled */}
+                                    {/* {wish.photoURL && (
                                         <div className="mb-4 rounded-xl overflow-hidden">
                                             <img
                                                 src={wish.photoURL}
@@ -352,7 +336,7 @@ export default function GuestWishes() {
                                                 className="w-full h-48 object-cover"
                                             />
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* Name */}
                                     <div className="flex items-center gap-2 mb-3">
