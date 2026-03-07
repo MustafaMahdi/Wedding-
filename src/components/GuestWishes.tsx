@@ -64,6 +64,8 @@ export default function GuestWishes() {
                 ...doc.data(),
             })) as Wish[];
             setWishes(wishesData);
+        }, (error) => {
+            console.error("Error fetching wishes:", error);
         });
 
         return () => unsubscribe();
