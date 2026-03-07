@@ -13,13 +13,13 @@ import {
 // TODO: Uncomment when Firebase Storage (Blaze plan) is enabled
 // import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-interface Wish {
-    id: string;
-    name: string;
-    message: string;
-    // photoURL?: string;
-    createdAt: Timestamp;
-}
+// interface Wish {
+//     id: string;
+//     name: string;
+//     message: string;
+//     photoURL?: string;
+//     createdAt: Timestamp;
+// }
 
 export default function GuestWishes() {
     const [isVisible, setIsVisible] = useState(false);
@@ -28,7 +28,7 @@ export default function GuestWishes() {
     // const [photo, setPhoto] = useState<File | null>(null);
     // const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
     // const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Intersection observer for fade-in animation
@@ -104,14 +104,12 @@ export default function GuestWishes() {
             //     photoURL = await getDownloadURL(storageRef);
             // }
 
-            console.log("Submitting wish...", { name, message });
             await addDoc(collection(db, "wishes"), {
                 name,
                 message,
                 // ...(photoURL && { photoURL }),
-                createdAt: Timestamp.now(),
+                timestamp: Timestamp.now(),
             });
-            console.log("Wish submitted successfully!");
 
             setName("");
             setMessage("");
@@ -120,19 +118,49 @@ export default function GuestWishes() {
             // if (fileInputRef.current) {
             //     fileInputRef.current.value = "";
             // }
-            setIsSubmitted(true);
-
-            setTimeout(() => {
-                setIsSubmitted(false);
-            }, 5000);
+            setToast({ type: "success", message: "Thank you! Your wish has been sent 💛" });
+            setTimeout(() => setToast(null), 4000);
         } catch (error) {
             console.error("Error submitting wish:", error);
+            setToast({ type: "error", message: "Something went wrong. Please try again." });
+            setTimeout(() => setToast(null), 4000);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
+        <>
+            {/* Toast Notification */}
+            <div
+                className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+                    toast
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-4 pointer-events-none"
+                }`}
+            >
+                {toast && (
+                    <div
+                        className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md ${
+                            toast.type === "success"
+                                ? "bg-white/90 border-green-200 text-green-700"
+                                : "bg-white/90 border-red-200 text-red-700"
+                        }`}
+                    >
+                        {toast.type === "success" ? (
+                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        )}
+                        <span className="font-medium text-sm">{toast.message}</span>
+                    </div>
+                )}
+            </div>
+
         <section
             id="wishes-section"
             className="py-20 md:py-32 bg-gradient-to-b from-white via-amber-50 to-rose-50 relative overflow-hidden"
@@ -268,29 +296,6 @@ export default function GuestWishes() {
                                 )}
                             </button>
 
-                            {/* Success Message */}
-                            {isSubmitted && (
-                                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-                                    <div className="flex items-center justify-center gap-2 text-green-600">
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                        <span className="font-medium">
-                                            Thank you! Your wish has been shared.
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </form>
                 </div>
@@ -314,5 +319,6 @@ export default function GuestWishes() {
                 */}
             </div>
         </section>
+        </>
     );
 }
