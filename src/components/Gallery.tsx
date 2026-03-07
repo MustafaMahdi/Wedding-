@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Gallery() {
     const [isVisible, setIsVisible] = useState(false);
@@ -24,14 +25,10 @@ export default function Gallery() {
         };
     }, []);
 
-    // Placeholder gallery with gradient backgrounds (replace with actual photos)
     const galleryItems = [
-        { id: 1, gradient: "from-rose-200 to-rose-300", label: "Mosque Exterior" },
-        { id: 2, gradient: "from-amber-200 to-rose-200", label: "Prayer Hall" },
-        { id: 3, gradient: "from-rose-300 to-amber-200", label: "Entrance" },
-        { id: 4, gradient: "from-amber-200 to-amber-300", label: "Garden Area" },
-        { id: 5, gradient: "from-rose-200 to-amber-300", label: "Interior Details" },
-        { id: 6, gradient: "from-amber-300 to-rose-200", label: "Night View" },
+        { id: 1, src: "/venue/exterior.jpg", label: "Mosque Exterior" },
+        { id: 2, src: "/venue/arches.jpg", label: "Stone Arches" },
+        { id: 3, src: "/venue/garden.jpg", label: "Garden Area" },
     ];
 
     return (
@@ -52,7 +49,7 @@ export default function Gallery() {
                     }`}
                 >
                     <p className="text-rose-400 text-sm tracking-[0.3em] uppercase mb-4">
-                        Memories
+                        The Venue
                     </p>
                     <h2 className="font-serif text-4xl md:text-5xl text-gray-800 mb-4">
                         Our Gallery
@@ -63,7 +60,7 @@ export default function Gallery() {
                 </div>
 
                 {/* Gallery Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {galleryItems.map((item, index) => (
                         <div
                             key={item.id}
@@ -78,9 +75,12 @@ export default function Gallery() {
                                 className="relative group cursor-pointer overflow-hidden rounded-2xl aspect-square"
                                 onClick={() => setSelectedImage(item.id)}
                             >
-                                {/* Placeholder Gradient (Replace with actual image) */}
-                                <div
-                                    className={`absolute inset-0 bg-gradient-to-br ${item.gradient} transition-transform duration-500 group-hover:scale-110`}
+                                <Image
+                                    src={item.src}
+                                    alt={item.label}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    sizes="(max-width: 768px) 100vw, 33vw"
                                 />
 
                                 {/* Overlay */}
@@ -99,20 +99,16 @@ export default function Gallery() {
                                     </div>
                                 </div>
 
-                                {/* Photo Placeholder Text */}
-                                <div className="absolute bottom-4 left-4 right-4 text-center">
-                                    <p className="text-white/80 text-sm font-light tracking-wider">
+                                {/* Label */}
+                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
+                                    <p className="text-white text-sm font-light tracking-wider text-center">
                                         {item.label}
-                                    </p>
-                                    <p className="text-white/60 text-xs">
-                                        Click to view
                                     </p>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
-
             </div>
 
             {/* Lightbox Modal */}
@@ -139,18 +135,22 @@ export default function Gallery() {
                             />
                         </svg>
                     </button>
-                    <div className="max-w-4xl w-full aspect-video rounded-2xl overflow-hidden">
-                        <div
-                            className={`w-full h-full bg-gradient-to-br ${
+                    <div className="max-w-4xl w-full rounded-2xl overflow-hidden relative" style={{ aspectRatio: "4/3" }}>
+                        <Image
+                            src={
                                 galleryItems.find(
                                     (item) => item.id === selectedImage
-                                )?.gradient
-                            } flex items-center justify-center`}
-                        >
-                            <p className="text-white text-xl font-light">
-                                Photo {selectedImage}
-                            </p>
-                        </div>
+                                )?.src || ""
+                            }
+                            alt={
+                                galleryItems.find(
+                                    (item) => item.id === selectedImage
+                                )?.label || ""
+                            }
+                            fill
+                            className="object-contain"
+                            sizes="100vw"
+                        />
                     </div>
                 </div>
             )}
