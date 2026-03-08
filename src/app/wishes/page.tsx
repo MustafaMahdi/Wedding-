@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import Link from "next/link";
 
 interface Wish {
@@ -15,28 +15,29 @@ interface Wish {
 export default function WishesPage() {
     const [wishes, setWishes] = useState<Wish[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const q = query(
-            collection(db, "wishes"),
-            orderBy("timestamp", "desc")
-        );
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
+        async function fetchWishes() {
+            try {
+                const q = query(
+                    collection(db, "wishes"),
+                    orderBy("timestamp", "desc")
+                );
+                const snapshot = await getDocs(q);
                 const data: Wish[] = snapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
                 })) as Wish[];
                 setWishes(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching wishes:", error);
+            } catch (err) {
+                console.error("Error fetching wishes:", err);
+                setError(err instanceof Error ? err.message : "Failed to load wishes");
+            } finally {
                 setLoading(false);
             }
-        );
-        return () => unsubscribe();
+        }
+        fetchWishes();
     }, []);
 
     return (
@@ -80,8 +81,16 @@ export default function WishesPage() {
                     </div>
                 )}
 
+                {/* Error State */}
+                {error && (
+                    <div className="text-center py-20">
+                        <p className="text-red-500 text-lg mb-2">Could not load wishes</p>
+                        <p className="text-gray-400 text-sm">{error}</p>
+                    </div>
+                )}
+
                 {/* Empty State */}
-                {!loading && wishes.length === 0 && (
+                {!loading && !error && wishes.length === 0 && (
                     <div className="text-center py-20">
                         <p className="text-gray-500 text-lg">No wishes yet. Be the first to send one!</p>
                         <Link
